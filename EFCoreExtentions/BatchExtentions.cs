@@ -61,15 +61,15 @@ namespace EFCoreExtentions
         /// <summary>
         /// 递归解析表达式 
         /// </summary>
-        /// <param name="Param"></param>
+        /// <param name="tableAlias"></param>
         /// <param name="expression"></param>
         /// <param name="sb"></param>
         /// <param name="sp"></param>
-        internal static void CreateUpdateBody(string Param, Expression expression, ref StringBuilder sb, ref List<SqlParameter> sp)
+        internal static void CreateUpdateBody(string tableAlias, Expression expression, ref StringBuilder sb, ref List<SqlParameter> sp)
         {
             if (expression is BinaryExpression binaryExpression)
             {
-                CreateUpdateBody(Param, binaryExpression.Left, ref sb, ref sp);
+                CreateUpdateBody(tableAlias, binaryExpression.Left, ref sb, ref sp);
 
                 switch (binaryExpression.NodeType)
                 {
@@ -103,7 +103,7 @@ namespace EFCoreExtentions
                     default: break;
                 }
 
-                CreateUpdateBody(Param, binaryExpression.Right, ref sb, ref sp);
+                CreateUpdateBody(tableAlias, binaryExpression.Right, ref sb, ref sp);
             }
 
             if (expression is ConstantExpression constantExpression)
@@ -115,7 +115,7 @@ namespace EFCoreExtentions
 
             if (expression is MemberExpression memberExpression)
             {
-                sb.Append($"{Param}.[{memberExpression.Member.Name}]");
+                sb.Append($"[{tableAlias}].[{memberExpression.Member.Name}]");
             }
         }
 
