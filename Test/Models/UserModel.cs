@@ -12,10 +12,10 @@ namespace Test
 
         public string RoleName { get; set; }
 
-        //[FromEntity("Name","Role")]
+        //[FromEntity("Role.Name")]
         //public string RoleName1 { get; set; }
 
-        [FromEntity("Name", "Department", "Role")]
+        [FromEntity("Role.Department.Name")]
         public string DepartmentName { get; set; }
 
         //public virtual RoleModel Role { get; set; }
