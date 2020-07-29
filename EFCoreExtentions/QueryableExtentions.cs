@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Linq.Expressions;
@@ -107,14 +107,14 @@ namespace EFCoreExtentions
             var tableNames = fromEntityAttribute.EntityNames;
             if (tableNames == null)
             {
-                var columnProperty = findType.GetProperty(fromEntityAttribute.EntityColuum);
+                var columnProperty = findType.GetProperty(fromEntityAttribute.EntityColumn);
                 if (columnProperty == null)
                     return null;
                 else
                     return Property(resultProperty, columnProperty);
             }
 
-            for (int i = tableNames.Length - 1; i >= 0; i--)
+            for (int i = 0; i < tableNames.Length; i++)
             {
                 var tableProperty = findType.GetProperty(tableNames[i]);
                 if (tableProperty == null)
@@ -124,7 +124,7 @@ namespace EFCoreExtentions
                 resultProperty = Property(resultProperty, tableProperty);
             }
 
-            var property = findType.GetProperty(fromEntityAttribute.EntityColuum);
+            var property = findType.GetProperty(fromEntityAttribute.EntityColumn);
             if (property == null)
                 return null;
             else
@@ -172,17 +172,27 @@ namespace EFCoreExtentions
         /// <summary>
         /// 字段(列名)
         /// </summary>
-        public string EntityColuum { get; }
+        public string EntityColumn { get; }
 
         /// <summary>
-        /// 列名 + 该列的表名 + 该列的表的上一级表名
+        /// 示例：表1.表2.表3....列
         /// </summary>
-        /// <param name="entityColuum"></param>
-        /// <param name="entityNames"></param>
-        public FromEntityAttribute(string entityColuum, params string[] entityNames)
+        public FromEntityAttribute(string entityName)
         {
-            EntityNames = entityNames;
-            EntityColuum = entityColuum;
+            if (string.IsNullOrWhiteSpace(entityName))
+            {
+                throw new ArgumentException();
+            }
+            var names = entityName.Split('.');
+            EntityColumn = names[names.Length - 1];
+            if (names.Length > 1)
+            {
+                EntityNames = new string[names.Length - 1];
+                for (int i = 0; i < names.Length - 1; i++)
+                {
+                    EntityNames[i] = names[i];
+                }
+            }
         }
     }
 }
